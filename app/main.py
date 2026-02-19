@@ -1,7 +1,7 @@
 from typing import List
-
+from jose import jwt, JWTError
 from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 
 from . import database, models, schemas, auth
 from sqlalchemy.orm import Session
@@ -19,6 +19,25 @@ def get_db():
     finally:
         db.close()
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    wrong_credentials = HTTPException(
+            status_code=401,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+    try:
+        payload = jwt.decode(token, auth.SECRET_KEY, algorithms=[auth.ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise wrong_credentials
+    except JWTError:
+        raise wrong_credentials
+    user = db.query(models.User).filter(models.User.username == username).first()
+    if user is None:
+        raise wrong_credentials
+    return user
 
 
 @app.post("/users/", response_model=schemas.User)
@@ -53,3 +72,12 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     access_token = auth.create_access_token(data={"sub": user.username})
 
     return {"access_token": access_token, "token_type": "bearer"}
+
+@app.post("/tasks/", response_model=schemas.Task)
+def create_task(task: schemas.TaskCreate, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
+    new_task = models.Task(**task.dict(), owner_id = current_user.id)
+
+    db.add(new_task)
+    db.commit()
+    db.refresh(new_task)
+    return new_task

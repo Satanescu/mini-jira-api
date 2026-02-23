@@ -2,7 +2,6 @@ from typing import List
 from jose import jwt, JWTError
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-
 from . import database, models, schemas, auth
 from sqlalchemy.orm import Session
 # from sqlalchemy import
@@ -76,8 +75,28 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 @app.post("/tasks/", response_model=schemas.Task)
 def create_task(task: schemas.TaskCreate, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
     new_task = models.Task(**task.dict(), owner_id = current_user.id)
-
     db.add(new_task)
     db.commit()
     db.refresh(new_task)
     return new_task
+
+@app.patch("/tasks/{task_id}", response_model=schemas.Task)
+def update_task(task_id: int, task_update: schemas.TaskUpdate, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
+    db_task = db.query(models.Task).filter(models.Task.id == task_id,models.Task.owner_id == current_user.id).first()
+    if db_task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    update_task = task_update.dict(exclude_unset=True)
+    for key, value in update_task.items():
+        setattr(db_task, key, value)
+
+    db.commit()
+    db.refresh(db_task)
+    return db_task
+
+@app.get("/tasks", response_model=List[schemas.Task])
+def read_tasks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db),current_user: models.User = Depends(get_current_user)):
+    tasks = db.query(models.Task).filter(models.Task.owner_id == current_user.id).offset(skip).limit(limit).all()
+    return tasks
+
+

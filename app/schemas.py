@@ -10,6 +10,9 @@ class TaskBase(BaseModel):
 class TaskCreate(TaskBase):
     pass
 
+class TaskUpdate(TaskBase):
+    pass
+
 class Task(TaskBase):
     id: int
     owner_id: int

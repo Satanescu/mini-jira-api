@@ -1,4 +1,4 @@
-# 🚀 Mini-Jira API
+#  Mini-Jira API
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)

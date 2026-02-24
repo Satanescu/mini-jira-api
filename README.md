@@ -9,7 +9,7 @@ A lightweight, RESTful API for task management inspired by Jira, built with **Fa
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 * **Backend Framework:** FastAPI
 * **Database:** SQLAlchemy (ORM) + SQLite (Easily scalable to PostgreSQL)
@@ -19,14 +19,14 @@ A lightweight, RESTful API for task management inspired by Jira, built with **Fa
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
-### 👤 User System & Security
+###  User System & Security
 * **Secure Registration:** Passwords are never stored in plain text; they are securely hashed using Bcrypt.
 * **JWT Authentication:** Secure login system that generates an Access Token (JWT) for session management.
 * **Protected Routes:** All task-related endpoints require a valid Bearer token. 
 
-### 📋 Task Management (CRUD)
+###  Task Management (CRUD)
 * **Create:** Logged-in users can create new tasks.
 * **Read:** Users can retrieve a list containing *only* their own tasks (Data Isolation).
 * **Update:** Ability to partially update tasks (e.g., toggling `completed: true` or changing the description) via `PATCH`.
@@ -34,7 +34,7 @@ A lightweight, RESTful API for task management inspired by Jira, built with **Fa
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```text
 mini-jira-api/
@@ -52,7 +52,7 @@ mini-jira-api/
 ├── requirements.txt    # Python dependencies
 └── README.md           # Project documentation
 ```
-## 🚀 How to Run Locally
+##  How to Run Locally
 
 * **Prerequisites**
   * You need Docker and Docker Compose installed on your machine.
@@ -80,11 +80,11 @@ Open your terminal and run the following command:
 docker-compose up --build
 ```
 
-## 📖 API Documentation (Swagger UI)
+##  API Documentation (Swagger UI)
 
 FastAPI automatically generates interactive documentation. Once the app is running, open your browser and navigate to:
 
-👉 **[http://localhost:8000/docs](http://localhost:8000/docs)**
+ **[http://localhost:8000/docs](http://localhost:8000/docs)**
 
 From here, you can test all endpoints live:
 
